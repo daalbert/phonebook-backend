@@ -1,26 +1,27 @@
 const express = require('express')
+const crypto = require('crypto')
 const app = express()
 
 app.use(express.json())
 
 let persons = [
     { 
-      "id": 1,
+      "id": "ee920d74-d358-4057-a904-0c3f6488ac34",
       "name": "Arto Hellas", 
       "number": "040-123456"
     },
     { 
-      "id": 2,
+      "id": "68a45f20-a896-4782-b301-2941f8130a7d",
       "name": "Ada Lovelace", 
       "number": "39-44-5323523"
     },
     { 
-      "id": 3,
+      "id": "3614a856-0e2e-4079-afaa-82f97fdb3110",
       "name": "Dan Abramov", 
       "number": "12-43-234345"
     },
     { 
-      "id": 4,
+      "id": "628d3dac-1a97-454b-95eb-e7948fbfe9b1",
       "name": "Mary Poppendieck", 
       "number": "39-23-6423122"
     }
@@ -39,6 +40,20 @@ app.get('/api/persons/:id', (request, response) => {
         response.status(404).end()
     }
 })
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    const person = {
+      id: crypto.randomUUID(),
+      name: body.name,
+      number: body.number,
+    }
+  
+    persons = persons.concat(person)
+    console.log("POST to /api/persons ",request.headers, "person:",person)
+    response.json(person)
+  })
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
