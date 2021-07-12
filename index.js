@@ -43,17 +43,26 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-
+    let badRequest = []
     const person = {
-      id: crypto.randomUUID(),
-      name: body.name,
-      number: body.number,
+        id: crypto.randomUUID(),
+        name: body.name,
+        number: body.number,
     }
-  
+
+    if(!body.name)
+        badRequest = badRequest.concat({error: 'name missing'})
+    if(!body.number)
+        badRequest = badRequest.concat({error: 'number missing'})
+    if(persons.some(p => p.name===body.name))
+        badRequest = badRequest.concat({error: 'name must be unique'})
+
+    if (badRequest.length)
+        return response.status(400).json(badRequest)
+
     persons = persons.concat(person)
-    console.log("POST to /api/persons ",request.headers, "person:",person)
     response.json(person)
-  })
+})
 
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
