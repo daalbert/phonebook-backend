@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const cors = require('cors')
 const app = express()
 const morgan = require('morgan')
+app.use(express.static('build'))
 app.use(cors())
 app.use(express.json())
 
