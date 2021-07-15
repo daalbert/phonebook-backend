@@ -20,16 +20,16 @@ app.get('/api/persons', (request, response) => {
 	})
 })
 
-app.get('/api/persons/:id', (request, response) => {
-	Person.findById(request.params.id).then( person => {
-		response.json(person)
-	})
-/* TODO:   deal will not found
-	if (person) 
-		response.json(person)
-	else 
-		response.status(404).end()
-*/
+app.get('/api/persons/:id', (request, response, next) => {
+	Person.findById(request.params.id)
+		.then( person => {
+			if (person) {
+				response.json(person)
+			} else {
+				response.status(404).end()
+			}
+		})
+		.catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -83,8 +83,10 @@ app.delete('/api/persons/:id', (request, response, next) => {
 })
 
 app.get('/info', (request, response) => {
-	const msg = `Phonebook has info for ${Person.length} people<br /><br />${new Date()}`
-	response.send(msg)
+	Person.estimatedDocumentCount({}, (err,count) =>{
+		const msg = `Phonebook has info for ${count} people<br /><br />${new Date()}`
+		response.send(msg)
+	})
 })
 
 const unknownEndpoint = (request, response) => {
