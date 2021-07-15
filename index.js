@@ -4,10 +4,11 @@ const crypto = require('crypto')
 const cors = require('cors')
 const Person = require('./models/person')
 const app = express()
+app.use(express.json())
 const morgan = require('morgan')
 app.use(express.static('build'))
 app.use(cors())
-app.use(express.json())
+
 
 morgan.token('body', (req,res) =>  JSON.stringify(req.body))
 app.use(
@@ -48,30 +49,30 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
+	console.log("inside post(/api/persons")
 	const body = request.body
-	let badRequest = []
+	/*let badRequest = []
 
 	if(!body.name)
 		badRequest = badRequest.concat({error: 'name missing'})
 	if(!body.number)
 		badRequest = badRequest.concat({error: 'number missing'})
-	/*
-	if(persons.some(p => p.name===body.name))
-		badRequest = badRequest.concat({error: 'name must be unique'})
-	*/
 
 	if (badRequest.length)
-		return response.status(400).json(badRequest)
+		return response.status(400).json(badRequest)*/
 
 	const person = new Person({
 		name: body.name,
 		number: body.number,
 	})
 
-	person.save().then(savedPerson => {
-		response.json(savedPerson)
-	})
+	person.save()
+		.then(savedPerson => savedPerson.toJSON())
+		.then( savedAndFormattedPerson => {
+			response.json(savedPerson)
+		})
+		.catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
@@ -97,8 +98,11 @@ app.use(unknownEndpoint) // load 2nd to last
 
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
-  if (error.name === 'CastError') 
+  if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+	} else if (error.name === "ValidationError") {
+		return response.status(400).json({ error: error.message })
+	}	
   next(error)
 }
 app.use(errorHandler) //load last
