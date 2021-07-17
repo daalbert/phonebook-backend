@@ -21,3 +21,5 @@ Note: Before moving to MongoDB, I decided to use crypto.randomUUID() instead of 
 [Exercises 3.19-3.21](https://fullstackopen.com/en/part3/validation_and_es_lint#exercises-3-19-3-21)  Phonebook database (step7-8), fullstack production deploy
 
 [Exercises 3.22](https://fullstackopen.com/en/part3/validation_and_es_lint#exercise-3-22)  Lint configuration
+
+Frontend repo: https://github.com/daalbert/fullstackopen/tree/main/part3/phonebook
